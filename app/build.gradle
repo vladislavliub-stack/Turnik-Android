@@ -1,5 +1,25 @@
 plugins { id 'com.android.application' }
-android { namespace 'com.turnik.app'; compileSdk 35
- defaultConfig { applicationId 'com.turnik.app'; minSdk 24; targetSdk 28; versionCode 1; versionName '1.0' }
+android {
+ namespace 'com.turnik.app'
+ compileSdk 35
+ defaultConfig { applicationId 'com.turnik.app'; minSdk 24; targetSdk 28; versionCode 10100; versionName '1.1.0' }
+ signingConfigs {
+  release {
+   def path = System.getenv('TURNIK_KEYSTORE_FILE')
+   if (path) {
+    storeFile file(path)
+    storePassword System.getenv('TURNIK_KEYSTORE_PASSWORD')
+    keyAlias System.getenv('TURNIK_KEY_ALIAS')
+    keyPassword System.getenv('TURNIK_KEY_PASSWORD')
+   }
+  }
+ }
+ buildTypes {
+  release {
+   minifyEnabled false
+   if (System.getenv('TURNIK_KEYSTORE_FILE')) signingConfig signingConfigs.release
+  }
+ }
  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
+dependencies { implementation 'androidx.core:core:1.13.1' }
