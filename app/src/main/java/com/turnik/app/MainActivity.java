@@ -29,11 +29,13 @@ public class MainActivity extends Activity {
         add(root,text("ТУРНИК  💪",27,true),0);add(root,text("Каждый день становись сильнее",14,false),3);
         todayText=text("",50,true);add(root,todayText,24);add(root,text("подтягиваний сегодня",16,false),0);
         LinearLayout actions=new LinearLayout(this);actions.setOrientation(0);for(int n:new int[]{1,5,10}){Button b=button("+"+n);LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(56),1);p.setMargins(dp(2),0,dp(2),0);actions.addView(b,p);b.setOnClickListener(v->record(n));}add(root,actions,20);
+        Button bestSet=button("Лучший подход");add(root,bestSet,8);bestSet.setOnClickListener(v->showBestSet());
         Button custom=button("Записать подход");add(root,custom,8);custom.setOnClickListener(v->askCount());Button update=button("Проверить обновления");add(root,update,8);update.setOnClickListener(v->new Updates(this).check(true));
         LinearLayout stats=new LinearLayout(this);stats.setOrientation(0);totalText=text("",15,true);streakText=text("",15,true);recordText=text("",15,true);for(TextView t:new TextView[]{totalText,streakText,recordText}){t.setGravity(Gravity.CENTER);stats.addView(t,new LinearLayout.LayoutParams(0,dp(66),1));}add(root,stats,16);
         add(root,text("Прогресс за 14 дней",20,true),18);graph=new Graph(this);add(root,graph,8);
         add(root,text("История подходов",20,true),20);history=column();add(root,history,8);
         Button export=button("Поделиться резервной копией");add(root,export,22);export.setOnClickListener(v->exportData());refresh();}
+    void showBestSet(){int best=0;String bestDay=null;for(String day:log.keySet()){for(int count:log.get(day)){if(count>best){best=count;bestDay=day;}}}String message=bestDay==null?"Пока нет записанных подходов.":"Подтягиваний за один подход: "+best+"\nДата: "+bestDay;new AlertDialog.Builder(this).setTitle("Лучший подход").setMessage(message).setPositiveButton("Закрыть",null).show();}
     void askCount(){EditText e=new EditText(this);e.setInputType(2);e.setHint("Например, 8");new AlertDialog.Builder(this).setTitle("Сколько подтягиваний?").setView(e).setNegativeButton("Отмена",null).setPositiveButton("Добавить",(d,w)->{try{int n=Integer.parseInt(e.getText().toString());if(n>0&&n<=1000)record(n);else Toast.makeText(this,"Введите число от 1 до 1000",Toast.LENGTH_SHORT).show();}catch(Exception ex){Toast.makeText(this,"Введите число",Toast.LENGTH_SHORT).show();}}).show();}
     void record(int n){if(!log.containsKey(today()))log.put(today(),new ArrayList<>());log.get(today()).add(n);save();refresh();}
     void remove(String day,int idx){ArrayList<Integer> a=log.get(day);if(a==null||idx>=a.size())return;a.remove(idx);if(a.isEmpty())log.remove(day);save();refresh();}
